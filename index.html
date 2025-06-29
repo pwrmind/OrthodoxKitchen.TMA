@@ -342,7 +342,7 @@
                         :key="recipe.id"
                         @click="viewRecipe(recipe)"
                     >
-                        <img :src="recipe.image" :alt="recipe.title" class="recipe-image">
+                        <img :src="recipe.image" :alt="recipe.title" onerror="/assets/images/product-not-available.svg" class="recipe-image">
                         <div class="recipe-info">
                             <h4 class="recipe-title">{{ recipe.title }}</h4>
                             <div class="recipe-tags">
@@ -421,7 +421,8 @@
                         id: 1,
                         title: "Гречневая каша с грибами",
                         description: "Питательная каша с лесными грибами и луком",
-                        image: "https://via.placeholder.com/300x200?text=Гречневая+каша",
+                        image: "/assets/images/product-not-available.svg",
+                        onerror: "this.src='images/not_found.png';",
                         tags: ["постное", "веганское"],
                         ingredients: [
                             { name: "Гречневая крупа", quantity: 1, unit: "стакан" },
@@ -434,7 +435,8 @@
                         id: 2,
                         title: "Овощное рагу",
                         description: "Ароматное рагу из сезонных овощей",
-                        image: "https://via.placeholder.com/300x200?text=Овощное+рагу",
+                        image: "/assets/images/product-not-available.svg",
+                        onerror: "this.src='images/not_found.png';",
                         tags: ["постное", "веганское"],
                         ingredients: [
                             { name: "Картофель", quantity: 4, unit: "шт" },
@@ -447,7 +449,8 @@
                         id: 3,
                         title: "Рыба запечённая",
                         description: "Филе белой рыбы с лимоном и травами",
-                        image: "https://via.placeholder.com/300x200?text=Рыба+запечённая",
+                        image: "/assets/images/product-not-available.svg",
+                        onerror: "this.src='images/not_found.png';",
                         tags: ["рыбное"],
                         ingredients: [
                             { name: "Филе белой рыбы", quantity: 500, unit: "г" },
@@ -459,7 +462,8 @@
                         id: 4,
                         title: "Творожная запеканка",
                         description: "Нежная запеканка с изюмом и ванилью",
-                        image: "https://via.placeholder.com/300x200?text=Творожная+запеканка",
+                        image: "/assets/images/product-not-available.svg",
+                        onerror: "this.src='images/not_found.png';",
                         tags: ["молочное"],
                         ingredients: [
                             { name: "Творог", quantity: 500, unit: "г" },
@@ -472,7 +476,8 @@
                         id: 5,
                         title: "Щи постные",
                         description: "Традиционные русские щи с капустой и грибами",
-                        image: "https://via.placeholder.com/300x200?text=Щи+постные",
+                        image: "/assets/images/product-not-available.svg",
+                        onerror: "this.src='images/not_found.png';",
                         tags: ["постное", "суп"],
                         ingredients: [
                             { name: "Капуста", quantity: 300, unit: "г" },
@@ -485,7 +490,8 @@
                         id: 6,
                         title: "Куриный суп",
                         description: "Ароматный куриный суп с домашней лапшой",
-                        image: "https://via.placeholder.com/300x200?text=Куриный+суп",
+                        image: "/assets/images/product-not-available.svg",
+                        onerror: "this.src='images/not_found.png';",
                         tags: ["мясное"],
                         ingredients: [
                             { name: "Курица", quantity: 1, unit: "шт" },
