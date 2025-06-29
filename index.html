@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrthodoxKitchen - Православная кухня</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --tg-theme-bg-color: #ffffff;
+            --tg-theme-text-color: #000000;
+            --tg-theme-button-color: #4a76a8;
+            --tg-theme-button-text-color: #ffffff;
+            --tg-theme-hint-color: #707579;
+            --tg-theme-link-color: #4a76a8;
+            --tg-theme-secondary-bg-color: #f0f2f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-text-color);
+            padding: 12px;
+            max-width: 100%;
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--tg-theme-secondary-bg-color);
+            margin-bottom: 20px;
+        }
+
+        .app-title {
+            font-size: 1.8rem;
+            color: #5d4037;
+            margin-bottom: 5px;
+        }
+
+        .app-subtitle {
+            color: var(--tg-theme-hint-color);
+            font-size: 0.9rem;
+        }
+
+        .day-info {
+            background: var(--tg-theme-secondary-bg-color);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .period-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #5d4037;
+        }
+
+        .fast-indicator {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .fast-yes {
+            background: #e57373;
+            color: #fff;
+        }
+
+        .fast-no {
+            background: #81c784;
+            color: #fff;
+        }
+
+        .food-recommendations {
+            background: #fff8e1;
+            border-left: 4px solid #ffd54f;
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin: 25px 0 15px;
+            color: #5d4037;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--tg-theme-secondary-bg-color);
+        }
+
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .recipe-info {
+            padding: 12px;
+        }
+
+        .recipe-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+            height: 40px;
+            overflow: hidden;
+        }
+
+        .recipe-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .recipe-tag {
+            background: var(--tg-theme-secondary-bg-color);
+            color: var(--tg-theme-hint-color);
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .cart-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f44336;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .cart-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--tg-theme-bg-color);
+            z-index: 200;
+            padding: 20px;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+        }
+
+        .cart-view.active {
+            transform: translateY(0);
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--tg-theme-secondary-bg-color);
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--tg-theme-text-color);
+            cursor: pointer;
+        }
+
+        .ingredient-list {
+            list-style: none;
+        }
+
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--tg-theme-secondary-bg-color);
+        }
+
+        .ingredient-name {
+            flex-grow: 1;
+        }
+
+        .ingredient-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--tg-theme-secondary-bg-color);
+            background: none;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .quantity-value {
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #f44336;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--tg-theme-hint-color);
+        }
+
+        .empty-cart i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .generate-list-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 480px) {
+            .recipes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <header>
+                <h1 class="app-title">OrthodoxKitchen</h1>
+                <p class="app-subtitle">Православная кухня по дням года</p>
+            </header>
+            
+            <main v-if="currentView === 'main'">
+                <div class="day-info">
+                    <h2 class="period-name">{{ calendarInfo.period }}</h2>
+                    <div :class="['fast-indicator', calendarInfo.isFast ? 'fast-yes' : 'fast-no']">
+                        {{ calendarInfo.isFast ? 'Сегодня пост' : 'Поста нет' }}
+                    </div>
+                    <p>{{ calendarInfo.description }}</p>
+                    <div class="food-recommendations">
+                        <strong>Рекомендации по пище:</strong> {{ calendarInfo.foodRules }}
+                    </div>
+                </div>
+                
+                <h3 class="section-title">Рекомендуемые рецепты</h3>
+                <div class="recipes-grid">
+                    <div 
+                        class="recipe-card" 
+                        v-for="recipe in filteredRecipes" 
+                        :key="recipe.id"
+                        @click="viewRecipe(recipe)"
+                    >
+                        <img :src="recipe.image" :alt="recipe.title" class="recipe-image">
+                        <div class="recipe-info">
+                            <h4 class="recipe-title">{{ recipe.title }}</h4>
+                            <div class="recipe-tags">
+                                <span class="recipe-tag" v-for="tag in recipe.tags" :key="tag">{{ tag }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <div class="cart-view" :class="{ active: currentView === 'cart' }">
+                <div class="cart-header">
+                    <h2>Список покупок</h2>
+                    <button class="close-cart" @click="currentView = 'main'">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div v-if="cartIngredients.length === 0" class="empty-cart">
+                    <i class="fas fa-shopping-basket"></i>
+                    <h3>Корзина пуста</h3>
+                    <p>Добавьте рецепты, чтобы увидеть список ингредиентов</p>
+                </div>
+                
+                <ul v-else class="ingredient-list">
+                    <li class="ingredient-item" v-for="(ingredient, index) in cartIngredients" :key="index">
+                        <div class="ingredient-name">{{ ingredient.name }}</div>
+                        <div class="ingredient-controls">
+                            <button class="quantity-btn" @click="decreaseIngredient(ingredient)">-</button>
+                            <span class="quantity-value">{{ ingredient.quantity }} {{ ingredient.unit }}</span>
+                            <button class="quantity-btn" @click="increaseIngredient(ingredient)">+</button>
+                            <button class="remove-btn" @click="removeIngredient(ingredient)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+                
+                <button v-if="cartIngredients.length > 0" class="generate-list-btn">
+                    Сохранить список
+                </button>
+            </div>
+            
+            <button class="cart-button" @click="currentView = 'cart'">
+                <i class="fas fa-shopping-basket"></i>
+                <span v-if="cartRecipes.length > 0" class="cart-badge">{{ cartRecipes.length }}</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, reactive, computed, onMounted } = Vue;
+        
+        createApp({
+            setup() {
+                // Инициализация Telegram Web App
+                const tg = window.Telegram.WebApp;
+                tg.expand();
+                tg.enableClosingConfirmation();
+                
+                // Состояние приложения
+                const currentView = ref('main');
+                const cartRecipes = ref([]);
+                
+                // Данные православного календаря
+                const calendarInfo = reactive({
+                    period: "Осенний мясоед",
+                    isFast: false,
+                    description: "Период между Успенским и Рождественским постами, когда разрешается употребление мясной пищи.",
+                    foodRules: "Разрешена скоромная пища (мясо, молочные продукты, яйца)"
+                });
+                
+                // База рецептов
+                const recipes = ref([
+                    {
+                        id: 1,
+                        title: "Гречневая каша с грибами",
+                        description: "Питательная каша с лесными грибами и луком",
+                        image: "https://via.placeholder.com/300x200?text=Гречневая+каша",
+                        tags: ["постное", "веганское"],
+                        ingredients: [
+                            { name: "Гречневая крупа", quantity: 1, unit: "стакан" },
+                            { name: "Грибы", quantity: 300, unit: "г" },
+                            { name: "Лук репчатый", quantity: 2, unit: "шт" },
+                            { name: "Морковь", quantity: 1, unit: "шт" }
+                        ]
+                    },
+                    {
+                        id: 2,
+                        title: "Овощное рагу",
+                        description: "Ароматное рагу из сезонных овощей",
+                        image: "https://via.placeholder.com/300x200?text=Овощное+рагу",
+                        tags: ["постное", "веганское"],
+                        ingredients: [
+                            { name: "Картофель", quantity: 4, unit: "шт" },
+                            { name: "Кабачок", quantity: 1, unit: "шт" },
+                            { name: "Баклажан", quantity: 1, unit: "шт" },
+                            { name: "Помидоры", quantity: 3, unit: "шт" }
+                        ]
+                    },
+                    {
+                        id: 3,
+                        title: "Рыба запечённая",
+                        description: "Филе белой рыбы с лимоном и травами",
+                        image: "https://via.placeholder.com/300x200?text=Рыба+запечённая",
+                        tags: ["рыбное"],
+                        ingredients: [
+                            { name: "Филе белой рыбы", quantity: 500, unit: "г" },
+                            { name: "Лимон", quantity: 1, unit: "шт" },
+                            { name: "Петрушка", quantity: 1, unit: "пучок" }
+                        ]
+                    },
+                    {
+                        id: 4,
+                        title: "Творожная запеканка",
+                        description: "Нежная запеканка с изюмом и ванилью",
+                        image: "https://via.placeholder.com/300x200?text=Творожная+запеканка",
+                        tags: ["молочное"],
+                        ingredients: [
+                            { name: "Творог", quantity: 500, unit: "г" },
+                            { name: "Яйца", quantity: 3, unit: "шт" },
+                            { name: "Мука", quantity: 3, unit: "ст.л" },
+                            { name: "Изюм", quantity: 100, unit: "г" }
+                        ]
+                    },
+                    {
+                        id: 5,
+                        title: "Щи постные",
+                        description: "Традиционные русские щи с капустой и грибами",
+                        image: "https://via.placeholder.com/300x200?text=Щи+постные",
+                        tags: ["постное", "суп"],
+                        ingredients: [
+                            { name: "Капуста", quantity: 300, unit: "г" },
+                            { name: "Картофель", quantity: 3, unit: "шт" },
+                            { name: "Грибы", quantity: 200, unit: "г" },
+                            { name: "Морковь", quantity: 1, unit: "шт" }
+                        ]
+                    },
+                    {
+                        id: 6,
+                        title: "Куриный суп",
+                        description: "Ароматный куриный суп с домашней лапшой",
+                        image: "https://via.placeholder.com/300x200?text=Куриный+суп",
+                        tags: ["мясное"],
+                        ingredients: [
+                            { name: "Курица", quantity: 1, unit: "шт" },
+                            { name: "Лапша", quantity: 150, unit: "г" },
+                            { name: "Морковь", quantity: 2, unit: "шт" },
+                            { name: "Лук репчатый", quantity: 1, unit: "шт" }
+                        ]
+                    }
+                ]);
+                
+                // Фильтрация рецептов по текущему дню
+                const filteredRecipes = computed(() => {
+                    const isFastDay = calendarInfo.isFast;
+                    
+                    return recipes.value.filter(recipe => {
+                        // В постные дни показываем только постные рецепты
+                        if (isFastDay) {
+                            return recipe.tags.includes("постное") || 
+                                   recipe.tags.includes("веганское") || 
+                                   recipe.tags.includes("рыбное");
+                        }
+                        
+                        // В обычные дни показываем все рецепты
+                        return true;
+                    });
+                });
+                
+                // Ингредиенты в корзине
+                const cartIngredients = computed(() => {
+                    const allIngredients = [];
+                    
+                    cartRecipes.value.forEach(recipe => {
+                        recipe.ingredients.forEach(ingredient => {
+                            const existing = allIngredients.find(i => 
+                                i.name === ingredient.name && i.unit === ingredient.unit
+                            );
+                            
+                            if (existing) {
+                                existing.quantity += ingredient.quantity;
+                            } else {
+                                allIngredients.push({...ingredient});
+                            }
+                        });
+                    });
+                    
+                    return allIngredients;
+                });
+                
+                // Функции приложения
+                const viewRecipe = (recipe) => {
+                    // В этом примере мы просто добавляем рецепт в корзину
+                    // В реальном приложении здесь можно показать детали рецепта
+                    addToCart(recipe);
+                    
+                    // Показываем уведомление в Telegram
+                    tg.showPopup({
+                        title: 'Рецепт добавлен',
+                        message: `${recipe.title} добавлен в список покупок`,
+                        buttons: [{ type: 'ok' }]
+                    });
+                };
+                
+                const addToCart = (recipe) => {
+                    // Проверяем, не добавлен ли уже рецепт
+                    if (!cartRecipes.value.some(r => r.id === recipe.id)) {
+                        cartRecipes.value.push(recipe);
+                    }
+                };
+                
+                const increaseIngredient = (ingredient) => {
+                    ingredient.quantity += 1;
+                };
+                
+                const decreaseIngredient = (ingredient) => {
+                    if (ingredient.quantity > 1) {
+                        ingredient.quantity -= 1;
+                    }
+                };
+                
+                const removeIngredient = (ingredient) => {
+                    // Находим и удаляем ингредиент из всех рецептов в корзине
+                    cartRecipes.value.forEach(recipe => {
+                        recipe.ingredients = recipe.ingredients.filter(i => 
+                            !(i.name === ingredient.name && i.unit === ingredient.unit)
+                        );
+                    });
+                    
+                    // Удаляем рецепты без ингредиентов
+                    cartRecipes.value = cartRecipes.value.filter(recipe => recipe.ingredients.length > 0);
+                };
+                
+                // Инициализация при загрузке
+                onMounted(() => {
+                    // В реальном приложении здесь будет запрос к API календаря
+                    console.log('Приложение инициализировано');
+                    
+                    // Пример получения данных пользователя Telegram
+                    if (tg.initDataUnsafe.user) {
+                        const user = tg.initDataUnsafe.user;
+                        console.log(`Пользователь: ${user.first_name} ${user.last_name}`);
+                    }
+                });
+                
+                return {
+                    currentView,
+                    calendarInfo,
+                    recipes,
+                    filteredRecipes,
+                    cartRecipes,
+                    cartIngredients,
+                    viewRecipe,
+                    addToCart,
+                    increaseIngredient,
+                    decreaseIngredient,
+                    removeIngredient
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
